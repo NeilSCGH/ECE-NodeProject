@@ -9,8 +9,11 @@ app.listen(
 )
 
 app.get(
-    '/hello/:name',
-    (req, res) => res.send("Hello " + req.params.name)
+    '/:path/:name',
+    (req, res) => {
+        console.log(`Hello ${req.params.path} ${req.params.name}`),
+        res.send("Hello " + req.params.path + " " + req.params.name)
+    }
 )
 
 app.post('/', (req, res) => {
@@ -18,9 +21,9 @@ app.post('/', (req, res) => {
 })
 
 app.put('/', function (req, res) {
-        // PUT
-    })
+    // PUT
+})
 
-app    .delete('/', (req, res) => {
-        // DELETE
-    })
+app.delete('/', (req, res) => {
+    // DELETE
+})
