@@ -4,23 +4,27 @@ app = express()
 app.set('port', 1337)
 
 app.listen(
-    app.get('port'),
-    () => console.log(`Server listening on ${app.get('port')}`)
+  app.get('port'),
+  () => console.log(`Server listening on ${app.get('port')}`)
 )
 
 app.get(
-    '/hello/:name',
-    (req, res) => res.send("Hello " + req.params.name)
+  '/hello/:name',
+  (req, res) => res.render('hello.ejs' , {name: req.params.name} )
 )
 
 app.post('/', (req, res) => {
-    // POST
+  // POST
 })
 
-app.put('/', function (req, res) {
+app.set('views', __dirname + "/views")
+app.set('view engine', 'ejs');
+
+app
+  .put('/', function (req, res) {
     // PUT
-})
+  })
 
-app.delete('/', (req, res) => {
+  .delete('/', (req, res) => {
     // DELETE
-})
+  })
