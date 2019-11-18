@@ -10,8 +10,24 @@ app.listen(
 
 app.get(
     '/hello/:name',
-    (req, res) => res.send("Hello " + req.params.name)
+    (req, res) => res.render('hello.ejs', { name: req.params.name })
 )
+
+app.set('views', __dirname + "/views")
+app.set('view engine', 'ejs');
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.post('/', (req, res) => {
     // POST
