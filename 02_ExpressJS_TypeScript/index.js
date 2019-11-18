@@ -9,11 +9,8 @@ app.listen(
 )
 
 app.get(
-    '/:path/:name',
-    (req, res) => {
-        console.log(`Hello ${req.params.path} ${req.params.name}`),
-        res.send("Hello " + req.params.path + " " + req.params.name)
-    }
+    '/hello/:name',
+    (req, res) => res.send("Hello " + req.params.name)
 )
 
 app.post('/', (req, res) => {
