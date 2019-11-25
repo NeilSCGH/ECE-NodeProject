@@ -1,5 +1,5 @@
 express = require('express')
-metrics = require('./metrics')
+metrics = require('./src/metrics')
 app = express()
 
 path = require('path')
