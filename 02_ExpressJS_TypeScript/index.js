@@ -9,10 +9,6 @@ app.set('views', __dirname + "/views")
 app.set('view engine', 'ejs');
 app.set('port', 1337)
 
-app.listen(
-    app.get('port'),
-    () => console.log(`Server listening on ${app.get('port')}`)
-)
 
 app.get(
     '/hello/:name',
@@ -26,6 +22,11 @@ app.get(
             res.status(200).json(data)
         })
     }
+)
+
+app.listen(
+    app.get('port'),
+    () => console.log(`Server listening on ${app.get('port')}`)
 )
 
 
