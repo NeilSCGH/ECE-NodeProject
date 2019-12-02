@@ -8,3 +8,8 @@ export class LevelDB {
     return levelup(encoded)
   }
 }
+
+const db = levelup(encoding(
+  leveldown("path"), 
+  { valueEncoding: 'json' })
+)
