@@ -66,10 +66,7 @@
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */,
     "outDir": "./dist",
     "moduleResolution": "node",
-    "compilerOptions": {
-        "noImplicitAny": false
-      }
-    
+    "noImplicitAny": false
   },
   "include": [
     "src/**/*"
