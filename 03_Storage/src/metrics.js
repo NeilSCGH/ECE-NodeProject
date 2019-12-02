@@ -25,7 +25,7 @@ var MetricsHandler = /** @class */ (function () {
     };
     MetricsHandler.get = function (callback) {
         var result = [
-            //new Metric('2013-11-04 14:00 UTC', 12),
+            new Metric('2013-11-04 14:00 UTC', 12),
             new Metric('2013-11-04 14:30 UTC', 15)
         ];
         callback(null, result);
