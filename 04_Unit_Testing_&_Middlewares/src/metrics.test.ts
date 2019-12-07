@@ -18,10 +18,25 @@ describe('Metrics', function () {
 
   describe('#get', function () {
     it('should get empty array on non existing group', function () {
-      dbMet.get((err: Error | null, result?: Metric[]) => {
+      dbMet.getOne(0, (err: Error | null, result?: Metric[]) => {
         expect(err).to.be.null
         expect(result).to.not.be.undefined
-        expect(result).to.not.be.empty
+        expect(result).to.be.empty
+      })
+    })
+  })
+
+  describe('#save', function () {
+    it('should save data', function () {
+      var metrics: Metric[] = []
+      metrics.push(new Metric("1384686660050", 3))
+      dbMet.save(0, metrics, (err: Error | null) => {
+        dbMet.getOne(0, function (err: Error | null, result?: Metric[]) {
+          expect(err).to.be.null
+          expect(result).to.not.be.undefined
+          if (result)
+            expect(result[0].value).to.equal(3)
+        })
       })
     })
   })
