@@ -1,9 +1,8 @@
-import 'chai'
-import { expect } from 'chai'
+import chai, { expect } from 'chai'
 import { Metric, MetricsHandler } from './metrics'
 import { LevelDB } from "./leveldb"
 
-const dbPath: string = 'db_test'
+const dbPath: string = 'db'
 var dbMet: MetricsHandler// = new MetricsHandler(dbPath)
 
 describe('Metrics', function () {
@@ -29,13 +28,44 @@ describe('Metrics', function () {
   describe('#save', function () {
     it('should save data', function () {
       var metrics: Metric[] = []
-      metrics.push(new Metric("1384686660050", 3))
+      metrics.push(new Metric("123456789", 15))
       dbMet.save(0, metrics, (err: Error | null) => {
+        expect(metrics).to.not.be.empty
         dbMet.getOne(0, function (err: Error | null, result?: Metric[]) {
           expect(err).to.be.null
           expect(result).to.not.be.undefined
           if (result)
-            expect(result[0].value).to.equal(3)
+            expect(result[0].value).to.equal(15)
+        })
+      })
+    })
+  })
+
+  describe('#update', function () {
+    it('should update data', function () {
+      var metrics: Metric[] = []
+      metrics.push(new Metric("123456789", 16))
+      dbMet.save(0, metrics, (err: Error | null) => {
+        expect(metrics).to.not.be.empty
+        dbMet.getOne(0, function (err: Error | null, result?: Metric[]) {
+          expect(err).to.be.null
+          expect(result).to.not.be.undefined
+          if (result)
+            expect(result[0].value).to.equal(16)
+        })
+      })
+    })
+  })
+
+  describe('#delete', function () {
+    it('should delete data', function () {
+      var metrics: Metric[] = []
+      metrics.push(new Metric("123456789", 15))
+      dbMet.deleteOne(0, metrics => {
+        dbMet.getOne(0, function (err: Error | null, result?: Metric[]) {
+          expect(err).to.be.null
+          expect(result).to.not.be.undefined
+          expect(result).to.be.empty
         })
       })
     })

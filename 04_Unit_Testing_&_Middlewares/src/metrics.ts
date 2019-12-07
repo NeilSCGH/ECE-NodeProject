@@ -70,7 +70,7 @@ export class MetricsHandler {
 
         let timestamp: string = data.key.split(':')[2]
         let metric: Metric = new Metric(timestamp, data.value)
-        
+
         metrics.push(metric)
       })
       .on('error', function (err) {
@@ -84,5 +84,9 @@ export class MetricsHandler {
         console.log('Stream ended')
         callback(null, metrics)
       })
+  }
+
+  public deleteOne(key: number, timestamp: any) {
+    this.db.del(`metrics:${key}:${timestamp}`)
   }
 }
