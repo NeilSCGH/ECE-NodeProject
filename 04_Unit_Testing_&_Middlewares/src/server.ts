@@ -21,8 +21,6 @@ app.use(bodyparser.json())
 app.use(morgan('dev'))
 app.set('view engine', 'ejs');
 app.set('views', __dirname + "/../views")
-app.use(authRouter)
-app.use('/user', userRouter)
 
 app.use(session({
   secret: 'my very secret phrase',
@@ -45,7 +43,24 @@ authRouter.get('/logout', (req: any, res: any) => {
   res.redirect('/login')
 })
 
+app.use(authRouter)
+
 app.post('/login', (req: any, res: any, next: any) => {
+  dbUser.get(req.body.username, (err: Error | null, result?: User) => {
+    if (err) next(err)
+    console.log(result)
+    if (result === undefined || !result.validatePassword(req.body.password)) {
+      res.redirect('/login')
+    } else {
+      req.session.loggedIn = true
+      req.session.user = result
+      res.redirect('/')
+    }
+  })
+})
+
+/*
+app.post('/signup', (req: any, res: any, next: any) => {
   dbUser.get(req.body.username, (err: Error | null, result?: User) => {
     if (err) next(err)
     if (result === undefined || !result.validatePassword(req.body.password)) {
@@ -57,7 +72,7 @@ app.post('/login', (req: any, res: any, next: any) => {
     }
   })
 })
-
+*/
 
 userRouter.post('/', (req: any, res: any, next: any) => {
   dbUser.get(req.body.username, function (err: Error | null, result?: User) {
@@ -65,13 +80,11 @@ userRouter.post('/', (req: any, res: any, next: any) => {
       res.status(409).send("user already exists")
     } else {
       dbUser.save(req.body, function (err: Error | null) {
-
         if (err) next(err)
-
         else res.status(201).send("user persisted")
       })
     }
-  })
+  })  
 })
 
 userRouter.get('/:username', (req: any, res: any, next: any) => {
@@ -82,6 +95,8 @@ userRouter.get('/:username', (req: any, res: any, next: any) => {
     else res.status(200).json(result)
   })
 })
+
+app.use('/user', userRouter)
 
 const authCheck = function (req: any, res: any, next: any) {
   if (req.session.loggedIn) {

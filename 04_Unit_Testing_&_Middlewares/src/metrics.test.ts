@@ -39,9 +39,6 @@ describe('Metrics', function () {
         })
       })
     })
-  })
-
-  describe('#update', function () {
     it('should update data', function () {
       var metrics: Metric[] = []
       metrics.push(new Metric("123456789", 16))
@@ -59,15 +56,17 @@ describe('Metrics', function () {
 
   describe('#delete', function () {
     it('should delete data', function () {
-      var metrics: Metric[] = []
-      metrics.push(new Metric("123456789", 15))
-      dbMet.deleteOne(0, metrics => {
-        dbMet.getOne(0, function (err: Error | null, result?: Metric[]) {
-          expect(err).to.be.null
-          expect(result).to.not.be.undefined
-          expect(result).to.be.empty
-        })
+      var time: any = "123456789"
+      dbMet.deleteOne(0, time)
+      dbMet.getOne(0, function (err: Error | null, result?: Metric[]) {
+        expect(err).to.be.null
+        expect(result).to.not.be.undefined
+        expect(result).to.be.empty
       })
+    })
+    it('should not fail if data does not exist', function () {
+      var time: any = "123456789"
+      dbMet.deleteOne(0, time)
     })
   })
 })
