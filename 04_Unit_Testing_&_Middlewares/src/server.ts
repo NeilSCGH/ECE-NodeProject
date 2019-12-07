@@ -2,17 +2,18 @@ import express = require('express')
 import { MetricsHandler } from './metrics'
 import path = require('path')
 import bodyparser = require('body-parser');
+import morgan = require('morgan')
 
-const app = express()
+const dbMet: MetricsHandler = new MetricsHandler('./db/metrics')
 const port: string = process.env.PORT || '8082'
+const app = express()
+
 app.use(express.static(path.join(__dirname, '/../public')))
-
-app.use(bodyparser.json())
 app.use(bodyparser.urlencoded())
-
-app.set('views', __dirname + "/../views")
+app.use(bodyparser.json())
+app.use(morgan('dev'))
 app.set('view engine', 'ejs');
-
+app.set('views', __dirname + "/../views")
 
 app.get('/', (req: any, res: any) => {
   res.write('Hello world')
@@ -24,7 +25,7 @@ app.get('/hello/:name', (req: any, res: any) => {
 })
 
 app.get('/metrics.json', (req: any, res: any) => {
-  MetricsHandler.get((err: Error | null, result?: any) => {
+  dbMet.get((err: Error | null, result?: any) => {
     if (err) {
       throw err
     }
@@ -38,9 +39,6 @@ app.listen(port, (err: Error) => {
   }
   console.log(`Server is running on http://localhost:${port}`)
 })
-
-
-const dbMet: MetricsHandler = new MetricsHandler('./db/metrics')
 
 app.post('/metrics/:id', (req: any, res: any) => {
   dbMet.save(req.params.id, req.body, (err: Error | null) => {

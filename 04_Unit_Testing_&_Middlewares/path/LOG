@@ -1,5 +1,5 @@
-2019/12/02-17:28:36.783 40f4 Recovering log #29
-2019/12/02-17:28:36.783 40f4 Level-0 table #31: started
-2019/12/02-17:28:36.796 40f4 Level-0 table #31: 191 bytes OK
-2019/12/02-17:28:36.831 40f4 Delete type=0 #29
-2019/12/02-17:28:36.831 40f4 Delete type=3 #27
+2019/12/06-22:14:30.777 1f7c Recovering log #39
+2019/12/06-22:14:30.777 1f7c Level-0 table #41: started
+2019/12/06-22:14:30.783 1f7c Level-0 table #41: 191 bytes OK
+2019/12/06-22:14:30.800 1f7c Delete type=0 #39
+2019/12/06-22:14:30.801 1f7c Delete type=3 #37
