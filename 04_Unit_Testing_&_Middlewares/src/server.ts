@@ -1,5 +1,5 @@
 import express = require('express')
-import { MetricsHandler } from './metrics'
+import { MetricsHandler, Metric } from './metrics'
 import path = require('path')
 import bodyparser = require('body-parser');
 import morgan = require('morgan')
@@ -37,6 +37,10 @@ authRouter.get('/signup', (req: any, res: any) => {
   res.render('signup')
 })
 
+authRouter.get('/addmetric', (req: any, res: any) => {
+  res.render('addmetric')
+})
+
 authRouter.get('/logout', (req: any, res: any) => {
   delete req.session.loggedIn
   delete req.session.user
@@ -54,7 +58,7 @@ authRouter.get('/delete', (req: any, res: any) => {
 app.use(authRouter)
 
 app.post('/login', (req: any, res: any, next: any) => {
-  dbUser.get(req.body.username,res, (err: Error | null, result?: User) => {
+  dbUser.get(req.body.username, (err: Error | null, result?: User) => {
     if (err) next(err)
     if (result === undefined || !result.validatePassword(req.body.password)) {
       console.log("USER NOT FOUND")
@@ -65,6 +69,18 @@ app.post('/login', (req: any, res: any, next: any) => {
       res.redirect('/')
     }
   })
+})
+
+app.post('/addmetric', (req: any, res: any, next: any) => {
+  let metrics: Metric[] = []
+  let metric: Metric = new Metric(req.body.timestamp, req.body.value, req.session.user.username)
+  metrics.push(metric)
+  dbMet.save(req.body.key, metrics, (err: Error | null) => {
+    if (err) throw err
+    res.status(200).send()
+  })
+  console.log("ADDMETRIC: ",req.body)
+  res.redirect('/')
 })
 
 userRouter.post('/', (req: any, res: any, next: any) => {
@@ -110,16 +126,43 @@ app.listen(port, (err: Error) => {
   console.log(`Server is running on http://localhost:${port}`)
 })
 
+app.post('/metrics/:id', (req: any, res: any) => {
+  dbMet.save(req.params.id, req.body, (err: Error | null) => {
+    if (err) throw err
+    res.status(200).send()
+  })
+})
+
+
+
+app.get('/metrics/', (req: any, res: any) => {
+  dbMet.getAllWithUsername(req.session.user.username ,(err: Error | null, result: any) => {
+    if (err) throw err
+    res.status(200).send(result)
+  })
+})
+
+app.get('/metrics/:id', (req: any, res: any) => {
+  dbMet.getOne(req.params.id,(err: Error | null, result: any) => {
+    if (err) throw err
+    res.status(200).send(result)
+  })
+})
+
+app.delete('/metrics/:id/:timestamp/:username', (req: any, res: any) => {
+  dbMet.getOne(req.params.id,(err: Error | null, result: any) => {
+    if (err) throw err
+    dbMet.deleteOne(req.params.id, result, req.params.username)
+    res.status(200).send(result)
+  })  
+})
+
+app.delete('/metrics/:id', (req: any, res: any) => {
+  dbMet.deleteOne(req.params.id,req.params.timestamp, req.params.username)
+  res.status(200).send()
+})
+
 /*
-app.get('/', (req: any, res: any) => {
-  res.write('Hello world')
-  res.end()
-})
-
-app.get('/hello/:name', (req: any, res: any) => {
-  res.render('hello.ejs', { name: req.params.name })
-})
-
 app.get('/metrics.json', (req: any, res: any) => {
   dbMet.get((err: Error | null, result?: any) => {
     if (err) {
@@ -129,14 +172,15 @@ app.get('/metrics.json', (req: any, res: any) => {
   })
 })
 
-app.post('/metrics/:id', (req: any, res: any) => {
-  dbMet.save(req.params.id, req.body, (err: Error | null) => {
-    if (err) throw err
-    res.status(200).send()
-  })
+
+app.get('/', (req: any, res: any) => {
+  res.write('Hello world')
+  res.end()
 })
 
-
+app.get('/hello/:name', (req: any, res: any) => {
+  res.render('hello.ejs', { name: req.params.name })
+})
 
 app.post('/signup', (req: any, res: any, next: any) => {
   dbUser.get(req.body.username, (err: Error | null, result?: User) => {

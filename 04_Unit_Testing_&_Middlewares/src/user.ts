@@ -39,7 +39,7 @@ export class User {
 export class UserHandler {
   public db: any
 
-  public get(username: string,res, callback: (err: Error | null, result?: User) => void) {
+  public get(username: string, callback: (err: Error | null, result?: User) => void) {
     this.db.get(`user:${username}`, function (err: Error, data: any) {
       //console.log("data: ",data)
       if (err) callback(err)

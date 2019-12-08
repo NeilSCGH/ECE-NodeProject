@@ -28,7 +28,7 @@ describe('Metrics', function () {
   describe('#save', function () {
     it('should save data', function () {
       var metrics: Metric[] = []
-      metrics.push(new Metric("123456789", 15))
+      metrics.push(new Metric("123456789", 15,"neil"))
       dbMet.save(0, metrics, (err: Error | null) => {
         expect(metrics).to.not.be.empty
         dbMet.getOne(0, function (err: Error | null, result?: Metric[]) {
@@ -41,7 +41,7 @@ describe('Metrics', function () {
     })
     it('should update data', function () {
       var metrics: Metric[] = []
-      metrics.push(new Metric("123456789", 16))
+      metrics.push(new Metric("123456789", 16,"neil"))
       dbMet.save(0, metrics, (err: Error | null) => {
         expect(metrics).to.not.be.empty
         dbMet.getOne(0, function (err: Error | null, result?: Metric[]) {
@@ -57,7 +57,7 @@ describe('Metrics', function () {
   describe('#delete', function () {
     it('should delete data', function () {
       var time: any = "123456789"
-      dbMet.deleteOne(0, time)
+      dbMet.deleteOne(0, time,"neil")
       dbMet.getOne(0, function (err: Error | null, result?: Metric[]) {
         expect(err).to.be.null
         expect(result).to.not.be.undefined
@@ -66,7 +66,7 @@ describe('Metrics', function () {
     })
     it('should not fail if data does not exist', function () {
       var time: any = "123456789"
-      dbMet.deleteOne(0, time)
+      dbMet.deleteOne(0, time,"neil")
     })
   })
 })
