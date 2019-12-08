@@ -119,12 +119,19 @@ export class MetricsHandler {
   }*/
 
   public deleteOne(key: number, timestamp: any, username: string) {
-    this.db.del(`metrics:${key}:${timestamp}:${username}`)
+    this.db.del(`metric:${key}:${timestamp}:${username}`)
+  }
+
+  public deleteTimeStamp(timestamp: any, data: any, username: string) {
+    console.log("delete time stamp", timestamp," ",data," ",username)
+    for (let t = 0; t < data.length; t++) {
+      this.db.del(`metric:${data[t].key}:${timestamp}:${username}`)
+    }
   }
 
   public deleteId(key: number, data: any, username: string) {
     for (let t = 0; t < data.length; t++) {
-      this.db.del(`metrics:${key}:${data[t].timestamp}:${username}`)
+      this.db.del(`metric:${key}:${data[t].timestamp}:${username}`)
     }
   }
 }

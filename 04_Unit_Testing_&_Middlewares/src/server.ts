@@ -47,6 +47,10 @@ authRouter.get('/addmetric', authCheck, (req: any, res: any) => {
   res.render('addmetric')
 })
 
+authRouter.get('/deletemetric', authCheck, (req: any, res: any) => {
+  res.render('deletemetric')
+})
+
 authRouter.get('/logout', authCheck, (req: any, res: any) => {
   delete req.session.loggedIn
   delete req.session.user
@@ -54,7 +58,7 @@ authRouter.get('/logout', authCheck, (req: any, res: any) => {
 })
 
 authRouter.get('/delete', authCheck, (req: any, res: any) => {
-  dbUser.delete(req.session.user,(err: Error | null) => {})
+  dbUser.delete(req.session.user, (err: Error | null) => { })
   delete req.session.loggedIn
   delete req.session.user
 
@@ -85,7 +89,7 @@ app.post('/addmetric', authCheck, (req: any, res: any, next: any) => {
     if (err) throw err
     res.status(200).send()
   })
-  console.log("ADDMETRIC: ",req.body)
+  console.log("ADDMETRIC: ", req.body)
   res.redirect('/')
 })
 
@@ -100,7 +104,7 @@ userRouter.post('/', (req: any, res: any, next: any) => {
         //res.status(201).send("user persisted")
       })
     }
-  })  
+  })
 })
 
 userRouter.get('/:username', authCheck, (req: any, res: any, next: any) => {
@@ -115,7 +119,7 @@ userRouter.get('/:username', authCheck, (req: any, res: any, next: any) => {
 app.use('/user', userRouter)
 
 app.get('/', authCheck, (req: any, res: any) => {
-  res.render('index', { name: req.session.username })
+  res.render('index', { name: req.session.user.username })
 })
 
 app.post('/metrics/:id', authCheck, (req: any, res: any) => {
@@ -125,31 +129,39 @@ app.post('/metrics/:id', authCheck, (req: any, res: any) => {
   })
 })
 
-app.get('/metrics/', authCheck, (req: any, res: any) => {
-  dbMet.getAllWithUsername(req.session.user.username ,(err: Error | null, result: any) => {
+app.get('/metrics/', (req: any, res: any) => {
+  dbMet.getAllWithUsername(req.session.user.username, (err: Error | null, result: any) => {
     if (err) throw err
     res.status(200).send(result)
   })
 })
 
 app.get('/metrics/:id', authCheck, (req: any, res: any) => {
-  dbMet.getOne(req.params.id,(err: Error | null, result: any) => {
+  dbMet.getOne(req.params.id, (err: Error | null, result: any) => {
     if (err) throw err
     res.status(200).send(result)
   })
 })
 
 app.delete('/metrics/:id/:timestamp/:username', authCheck, (req: any, res: any) => {
-  dbMet.getOne(req.params.id,(err: Error | null, result: any) => {
+  dbMet.getOne(req.params.id, (err: Error | null, result: any) => {
     if (err) throw err
     dbMet.deleteOne(req.params.id, result, req.params.username)
     res.status(200).send(result)
-  })  
+  })
 })
 
-app.delete('/metrics/:id', authCheck, (req: any, res: any) => {
-  dbMet.deleteOne(req.params.id,req.params.timestamp, req.params.username)
-  res.status(200).send()
+/*app.delete('/metrics/:id', authCheck, (req: any, res: any) => {
+  dbMet.getOne(req.params.id, (err: Error | null, result: any) => {
+    if (err) throw err
+    dbMet.deleteId(req.params.id, result, req.params.username)
+    res.status(200).send()
+  })
+})*/
+
+app.post('/metric', authCheck, (req: any, res: any) => {
+  dbMet.deleteOne(req.body.id, req.body.timestamp, req.session.user.username)
+  res.redirect('/')
 })
 
 app.listen(port, (err: Error) => {
