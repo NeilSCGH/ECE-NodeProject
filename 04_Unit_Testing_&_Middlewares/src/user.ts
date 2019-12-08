@@ -23,6 +23,7 @@ export class User {
   public setPassword(toSet: string): void {
     // Hash and set password
     this.password = toSet
+    //this.db.put(`user:${this.username}`, `${this.password}:${this.email}`, (err: Error | null) => {})
   }
 
   public getPassword(): string {

@@ -47,6 +47,10 @@ authRouter.get('/addmetric', authCheck, (req: any, res: any) => {
   res.render('addmetric')
 })
 
+authRouter.get('/changepwd', authCheck, (req: any, res: any) => {
+  res.render('passwordChange')
+})
+
 authRouter.get('/deletemetric', authCheck, (req: any, res: any) => {
   res.render('deletemetric')
 })
@@ -91,6 +95,26 @@ app.post('/addmetric', authCheck, (req: any, res: any, next: any) => {
   })
   console.log("ADDMETRIC: ", req.body)
   res.redirect('/')
+})
+
+app.post('/changepwd', authCheck, (req: any, res: any, next: any) => {
+  if (req.body.password==req.body.passwordBis){
+    dbUser.get(req.session.user.username, function (err: Error | null, result?: User) {
+      if (err || result == undefined) {
+        next(err)
+      } else {
+        result.setPassword(req.body.password)
+        req.session.user.password=req.body.password
+
+        dbUser.save(req.session.user, function (err: Error | null) {})
+      }
+    })
+    res.redirect('/')
+  }
+  else{
+    console.log("Password are different")
+    res.redirect('/changepwd')
+  }
 })
 
 userRouter.post('/', (req: any, res: any, next: any) => {
