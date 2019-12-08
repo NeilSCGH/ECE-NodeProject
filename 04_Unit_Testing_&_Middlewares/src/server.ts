@@ -46,9 +46,10 @@ authRouter.get('/logout', (req: any, res: any) => {
 app.use(authRouter)
 
 app.post('/login', (req: any, res: any, next: any) => {
+  console.log("body: ",req.body)
   dbUser.get(req.body.username, (err: Error | null, result?: User) => {
     if (err) next(err)
-    console.log(result)
+    console.log("result: ",result)
     if (result === undefined || !result.validatePassword(req.body.password)) {
       res.redirect('/login')
     } else {
@@ -79,6 +80,7 @@ userRouter.post('/', (req: any, res: any, next: any) => {
     if (!err || result !== undefined) {
       res.status(409).send("user already exists")
     } else {
+      console.log("req signup: ",req.body)
       dbUser.save(req.body, function (err: Error | null) {
         if (err) next(err)
         else res.status(201).send("user persisted")

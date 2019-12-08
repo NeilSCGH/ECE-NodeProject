@@ -18,6 +18,7 @@ export class User {
 
   static fromDb(username: string, value: any): User {
     const [password, email] = value.split(":")
+    console.log("pass,mail: ",password, email)
     return new User(username, email, password)
   }
 
@@ -42,14 +43,17 @@ export class UserHandler {
 
   public get(username: string, callback: (err: Error | null, result?: User) => void) {
     this.db.get(`user:${username}`, function (err: Error, data: any) {
+      //console.log("data: ",data)
       if (err) callback(err)
       else if (data == undefined) callback(null, data)
       else callback(null, User.fromDb(username, data))
     })
   }
 
-  public save(user: User, callback: (err: Error | null) => void) {
-    this.db.put(`user:${user.username}`, `${user.getPassword}:${user.email}`, (err: Error | null) => {
+  public save(bodyReq: any, callback: (err: Error | null) => void) {
+    var user = new User(bodyReq.username,bodyReq.email,bodyReq.password,false)
+    console.log("get user pass: ",user.username, user.getPassword())
+    this.db.put(`user:${user.username}`, `${user.getPassword()}:${user.email}`, (err: Error | null) => {
       callback(err)
     })
   }
