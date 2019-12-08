@@ -13,12 +13,10 @@ export class User {
     if (!passwordHashed) {
       this.setPassword(password)
     } else this.password = password
-    console.log("le nouveau mdp est ", this.password, " et ", password)
   }
 
   static fromDb(username: string, value: any): User {
     const [password, email] = value.split(":")
-    console.log("pass,mail: ",password, email)
     return new User(username, email, password)
   }
 
@@ -41,7 +39,7 @@ export class User {
 export class UserHandler {
   public db: any
 
-  public get(username: string, callback: (err: Error | null, result?: User) => void) {
+  public get(username: string,res, callback: (err: Error | null, result?: User) => void) {
     this.db.get(`user:${username}`, function (err: Error, data: any) {
       //console.log("data: ",data)
       if (err) callback(err)
@@ -52,14 +50,17 @@ export class UserHandler {
 
   public save(bodyReq: any, callback: (err: Error | null) => void) {
     var user = new User(bodyReq.username,bodyReq.email,bodyReq.password,false)
-    //console.log("get user pass: ",user.username, user.getPassword())
     this.db.put(`user:${user.username}`, `${user.getPassword()}:${user.email}`, (err: Error | null) => {
       callback(err)
     })
   }
 
-  public delete(username: string, callback: (err: Error | null) => void) {
-    // TODO
+  public delete(bodyReq: any, callback: (err: Error | null) => void) {
+    var user = new User(bodyReq.username,bodyReq.email,bodyReq.password,false)
+    console.log(bodyReq.username, " will be deleted")
+    this.db.del(`user:${user.username}`, `${user.getPassword()}:${user.email}`, (err: Error | null) => {
+      callback(err)
+    })
   }
 
   constructor(path: string) {

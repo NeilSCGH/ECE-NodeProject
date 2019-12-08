@@ -43,29 +43,22 @@ authRouter.get('/logout', (req: any, res: any) => {
   res.redirect('/login')
 })
 
+authRouter.get('/delete', (req: any, res: any) => {
+  dbUser.delete(req.session.user,(err: Error | null) => {})
+  delete req.session.loggedIn
+  delete req.session.user
+
+  res.redirect('/login')
+})
+
 app.use(authRouter)
 
 app.post('/login', (req: any, res: any, next: any) => {
-  console.log("body: ",req.body)
-  dbUser.get(req.body.username, (err: Error | null, result?: User) => {
-    if (err) next(err)
-    console.log("result: ",result)
-    if (result === undefined || !result.validatePassword(req.body.password)) {
-      res.redirect('/login')
-    } else {
-      req.session.loggedIn = true
-      req.session.user = result
-      res.redirect('/user/' + req.body.username)
-    }
-  })
-})
-
-/*
-app.post('/signup', (req: any, res: any, next: any) => {
-  dbUser.get(req.body.username, (err: Error | null, result?: User) => {
+  dbUser.get(req.body.username,res, (err: Error | null, result?: User) => {
     if (err) next(err)
     if (result === undefined || !result.validatePassword(req.body.password)) {
-      res.redirect('/login')
+      console.log("USER NOT FOUND")
+      //res.redirect('/login')
     } else {
       req.session.loggedIn = true
       req.session.user = result
@@ -73,14 +66,12 @@ app.post('/signup', (req: any, res: any, next: any) => {
     }
   })
 })
-*/
 
 userRouter.post('/', (req: any, res: any, next: any) => {
   dbUser.get(req.body.username, function (err: Error | null, result?: User) {
     if (!err || result !== undefined) {
       res.status(409).send("user already exists")
     } else {
-      console.log("req signup: ",req.body)
       dbUser.save(req.body, function (err: Error | null) {
         if (err) next(err)
         else res.redirect('/login')
@@ -142,6 +133,21 @@ app.post('/metrics/:id', (req: any, res: any) => {
   dbMet.save(req.params.id, req.body, (err: Error | null) => {
     if (err) throw err
     res.status(200).send()
+  })
+})
+
+
+
+app.post('/signup', (req: any, res: any, next: any) => {
+  dbUser.get(req.body.username, (err: Error | null, result?: User) => {
+    if (err) next(err)
+    if (result === undefined || !result.validatePassword(req.body.password)) {
+      res.redirect('/login')
+    } else {
+      req.session.loggedIn = true
+      req.session.user = result
+      res.redirect('/')
+    }
   })
 })
 */
