@@ -55,7 +55,7 @@ app.post('/login', (req: any, res: any, next: any) => {
     } else {
       req.session.loggedIn = true
       req.session.user = result
-      res.redirect('/')
+      res.redirect('/user/' + req.body.username)
     }
   })
 })
@@ -83,7 +83,8 @@ userRouter.post('/', (req: any, res: any, next: any) => {
       console.log("req signup: ",req.body)
       dbUser.save(req.body, function (err: Error | null) {
         if (err) next(err)
-        else res.status(201).send("user persisted")
+        else res.redirect('/login')
+        //res.status(201).send("user persisted")
       })
     }
   })  
@@ -118,12 +119,12 @@ app.listen(port, (err: Error) => {
   console.log(`Server is running on http://localhost:${port}`)
 })
 
-
+/*
 app.get('/', (req: any, res: any) => {
   res.write('Hello world')
   res.end()
 })
-/*
+
 app.get('/hello/:name', (req: any, res: any) => {
   res.render('hello.ejs', { name: req.params.name })
 })

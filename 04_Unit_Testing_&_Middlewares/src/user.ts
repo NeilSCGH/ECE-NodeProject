@@ -52,7 +52,7 @@ export class UserHandler {
 
   public save(bodyReq: any, callback: (err: Error | null) => void) {
     var user = new User(bodyReq.username,bodyReq.email,bodyReq.password,false)
-    console.log("get user pass: ",user.username, user.getPassword())
+    //console.log("get user pass: ",user.username, user.getPassword())
     this.db.put(`user:${user.username}`, `${user.getPassword()}:${user.email}`, (err: Error | null) => {
       callback(err)
     })
