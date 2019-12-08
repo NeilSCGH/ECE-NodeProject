@@ -22,6 +22,12 @@ app.use(morgan('dev'))
 app.set('view engine', 'ejs');
 app.set('views', __dirname + "/../views")
 
+const authCheck = function (req: any, res: any, next: any) {
+  if (req.session.loggedIn) {
+    next()
+  } else res.redirect('/login')
+}
+
 app.use(session({
   secret: 'my very secret phrase',
   store: new LevelStore('./db/sessions'),
@@ -37,17 +43,17 @@ authRouter.get('/signup', (req: any, res: any) => {
   res.render('signup')
 })
 
-authRouter.get('/addmetric', (req: any, res: any) => {
+authRouter.get('/addmetric', authCheck, (req: any, res: any) => {
   res.render('addmetric')
 })
 
-authRouter.get('/logout', (req: any, res: any) => {
+authRouter.get('/logout', authCheck, (req: any, res: any) => {
   delete req.session.loggedIn
   delete req.session.user
   res.redirect('/login')
 })
 
-authRouter.get('/delete', (req: any, res: any) => {
+authRouter.get('/delete', authCheck, (req: any, res: any) => {
   dbUser.delete(req.session.user,(err: Error | null) => {})
   delete req.session.loggedIn
   delete req.session.user
@@ -71,7 +77,7 @@ app.post('/login', (req: any, res: any, next: any) => {
   })
 })
 
-app.post('/addmetric', (req: any, res: any, next: any) => {
+app.post('/addmetric', authCheck, (req: any, res: any, next: any) => {
   let metrics: Metric[] = []
   let metric: Metric = new Metric(req.body.timestamp, req.body.value, req.session.user.username)
   metrics.push(metric)
@@ -97,7 +103,7 @@ userRouter.post('/', (req: any, res: any, next: any) => {
   })  
 })
 
-userRouter.get('/:username', (req: any, res: any, next: any) => {
+userRouter.get('/:username', authCheck, (req: any, res: any, next: any) => {
   dbUser.get(req.params.username, function (err: Error | null, result?: User) {
     if (err || result === undefined) {
       res.status(404).send("user not found")
@@ -108,48 +114,32 @@ userRouter.get('/:username', (req: any, res: any, next: any) => {
 
 app.use('/user', userRouter)
 
-const authCheck = function (req: any, res: any, next: any) {
-  if (req.session.loggedIn) {
-    next()
-  } else res.redirect('/login')
-}
-
 app.get('/', authCheck, (req: any, res: any) => {
   res.render('index', { name: req.session.username })
 })
 
-
-app.listen(port, (err: Error) => {
-  if (err) {
-    throw err
-  }
-  console.log(`Server is running on http://localhost:${port}`)
-})
-
-app.post('/metrics/:id', (req: any, res: any) => {
+app.post('/metrics/:id', authCheck, (req: any, res: any) => {
   dbMet.save(req.params.id, req.body, (err: Error | null) => {
     if (err) throw err
     res.status(200).send()
   })
 })
 
-
-
-app.get('/metrics/', (req: any, res: any) => {
+app.get('/metrics/', authCheck, (req: any, res: any) => {
   dbMet.getAllWithUsername(req.session.user.username ,(err: Error | null, result: any) => {
     if (err) throw err
     res.status(200).send(result)
   })
 })
 
-app.get('/metrics/:id', (req: any, res: any) => {
+app.get('/metrics/:id', authCheck, (req: any, res: any) => {
   dbMet.getOne(req.params.id,(err: Error | null, result: any) => {
     if (err) throw err
     res.status(200).send(result)
   })
 })
 
-app.delete('/metrics/:id/:timestamp/:username', (req: any, res: any) => {
+app.delete('/metrics/:id/:timestamp/:username', authCheck, (req: any, res: any) => {
   dbMet.getOne(req.params.id,(err: Error | null, result: any) => {
     if (err) throw err
     dbMet.deleteOne(req.params.id, result, req.params.username)
@@ -157,9 +147,16 @@ app.delete('/metrics/:id/:timestamp/:username', (req: any, res: any) => {
   })  
 })
 
-app.delete('/metrics/:id', (req: any, res: any) => {
+app.delete('/metrics/:id', authCheck, (req: any, res: any) => {
   dbMet.deleteOne(req.params.id,req.params.timestamp, req.params.username)
   res.status(200).send()
+})
+
+app.listen(port, (err: Error) => {
+  if (err) {
+    throw err
+  }
+  console.log(`Server is running on http://localhost:${port}`)
 })
 
 /*
