@@ -18,6 +18,7 @@ describe('Metrics', function () {
   describe('#get USER', function () {
     it('should get empty array on non existing group', function () {
       dbUsr.get("neilTEST", (err: Error | null, result?: User) => {
+        //LA PREMIERE LIGNE CAUSE L'ASSERTION ERROR
         expect(err).to.be.null
         expect(result).to.not.be.undefined
         expect(result).to.be.empty
@@ -34,42 +35,35 @@ describe('Metrics', function () {
           expect(err).to.be.null
           expect(result).to.not.be.undefined
           if (result)
-            console.log(result)
-            //expect(result[0].value).to.equal(15)
+            expect(result[0].value).to.equal("a@gmail.com:abc")
         })
       })
     })
-    /*
     it('should update data', function () {
-      var metrics: Metric[] = []
-      metrics.push(new Metric("123456789", 16, "neil"))
-      dbUsr.save(0, metrics, (err: Error | null) => {
-        expect(metrics).to.not.be.empty
-        dbUsr.getOne(0, function (err: Error | null, result?: Metric[]) {
+      var usr = new User("neil", "a@gmail.com", "abcde", false)
+      dbUsr.save(usr, (err: Error | null) => {
+        expect(err).to.be.null
+        dbUsr.get("neil", (err: Error | null, result?: User) => {
           expect(err).to.be.null
           expect(result).to.not.be.undefined
           if (result)
-            expect(result[0].value).to.equal(16)
+            expect(result[0].value).to.equal("a@gmail.com:abcde")
         })
       })
     })
-    */
   })
-  /*
-    describe('#delete', function () {
-      it('should delete data', function () {
-        var time: any = "123456789"
-        dbUsr.deleteOne(0, time,"neil")
-        dbUsr.getOne(0, function (err: Error | null, result?: Metric[]) {
-          expect(err).to.be.null
-          expect(result).to.not.be.undefined
-          expect(result).to.be.empty
-        })
+  describe('#delete', function () {
+    it('should delete data', function () {
+      var usertest: any = { password: 'abcde', username: 'neil', email: 'a@gmail.com' }
+      dbUsr.delete(usertest, (err: Error | null) => {
+        expect(err).to.be.null
       })
-      it('should not fail if data does not exist', function () {
-        var time: any = "123456789"
-        dbUsr.deleteOne(0, time,"neil")
+      dbUsr.get("neil", (err: Error | null, result?: User) => {
+        expect(err).to.be.null
+        expect(result).to.not.be.undefined
+        if (result)
+          expect(result[0].value).to.equal("a@gmail.com:abcde")
       })
     })
-    */
+  })
 })
