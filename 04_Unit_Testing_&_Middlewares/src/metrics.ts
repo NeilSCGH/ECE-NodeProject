@@ -44,7 +44,7 @@ export class MetricsHandler {
     let metrics: Metric[] = []
     this.db.createReadStream()
       .on('data', function (data) {
-        console.log(data.key, '=', data.value)
+        //console.log(data.key, '=', data.value)
 
         let key2: number = data.key.split(":")[1]
         if (key == key2) {
@@ -71,7 +71,7 @@ export class MetricsHandler {
     let metrics: Metric[] = []
     this.db.createReadStream()
       .on('data', function (data) {
-        console.log(data.key, '=', data.value)
+        //console.log(data.key, '=', data.value)
 
         let timestamp: string = data.key.split(':')[2]
         let username: string = data.key.split(':')[3]
@@ -123,7 +123,7 @@ export class MetricsHandler {
   }
 
   public deleteTimeStamp(timestamp: any, data: any, username: string) {
-    console.log("delete time stamp", timestamp," ",data," ",username)
+    //console.log("delete time stamp", timestamp," ",data," ",username)
     for (let t = 0; t < data.length; t++) {
       this.db.del(`metric:${data[t].key}:${timestamp}:${username}`)
     }

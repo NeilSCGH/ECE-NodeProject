@@ -2,7 +2,7 @@ import chai, { expect } from 'chai'
 import { Metric, MetricsHandler } from './metrics'
 import { LevelDB } from "./leveldb"
 
-const dbPath: string = 'db'
+const dbPath: string = 'dbTEST/metrics'
 var dbMet: MetricsHandler// = new MetricsHandler(dbPath)
 
 describe('Metrics', function () {
@@ -15,7 +15,7 @@ describe('Metrics', function () {
     dbMet.db.close()
   })
 
-  describe('#get', function () {
+  describe('#get metric', function () {
     it('should get empty array on non existing group', function () {
       dbMet.getOne(0, (err: Error | null, result?: Metric[]) => {
         expect(err).to.be.null
@@ -25,7 +25,7 @@ describe('Metrics', function () {
     })
   })
 
-  describe('#save', function () {
+  describe('#save metric', function () {
     it('should save data', function () {
       var metrics: Metric[] = []
       metrics.push(new Metric("123456789", 15,"neil"))
@@ -54,7 +54,7 @@ describe('Metrics', function () {
     })
   })
 
-  describe('#delete', function () {
+  describe('#delete metric', function () {
     it('should delete data', function () {
       var time: any = "123456789"
       dbMet.deleteOne(0, time,"neil")

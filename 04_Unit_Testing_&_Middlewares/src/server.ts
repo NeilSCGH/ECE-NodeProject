@@ -74,8 +74,13 @@ app.use(authRouter)
 app.post('/login', (req: any, res: any, next: any) => {
   dbUser.get(req.body.username, (err: Error | null, result?: User) => {
     if (err) next(err)
-    if (result === undefined || !result.validatePassword(req.body.password)) {
-      console.log("USER NOT FOUND")
+    //console.log("hey:",result)
+    if (result === undefined){
+      console.log("USER NOT FOUND : UNDEFINED")
+      //res.redirect('/login')
+    }
+    else if (!result.validatePassword(req.body.password)) {
+      console.log("MAUVAIS MDP")
       res.redirect('/login')
     } else {
       req.session.loggedIn = true
@@ -93,7 +98,7 @@ app.post('/addmetric', authCheck, (req: any, res: any, next: any) => {
     if (err) throw err
     res.status(200).send()
   })
-  console.log("ADDMETRIC: ", req.body)
+  //console.log("ADDMETRIC: ", req.body)
   res.redirect('/')
 })
 
@@ -117,7 +122,7 @@ app.post('/changepwd', authCheck, (req: any, res: any, next: any) => {
   }
 })
 
-userRouter.post('/', (req: any, res: any, next: any) => {
+userRouter.post('/signup', (req: any, res: any, next: any) => {
   dbUser.get(req.body.username, function (err: Error | null, result?: User) {
     if (!err || result !== undefined) {
       res.status(409).send("user already exists")
